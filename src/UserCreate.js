@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
 export default function UserCreate() {
   const classes = useStyles();
   
-  const handleSubmit = event => {
+  const handleSubmit = (event) => {
     event.preventDefault();
     var data = {
       'fname': fname,
