@@ -14,6 +14,8 @@ import TableRow from '@material-ui/core/TableRow';
 import Avatar from '@material-ui/core/Avatar';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import { Link } from "react-router-dom";
+import axios from "axios";
+import axiosClient from "./api/axiosClient";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -42,41 +44,63 @@ export default function UserList() {
     UsersGet()
   }, [])
   
-  const UsersGet = () => {
-    fetch("https://www.mecallapi.com/api/users")
-      .then(res => res.json())
-      .then(
-        (result) => {
-          setUsers(result)
-        }
-      )
+  const UsersGet = async() => {
+    const respone = await axiosClient.get('users')
+    setUsers(respone.data)
+    console.log(respone)
+    // fetch("https://www.mecallapi.com/api/users")
+    //   .then(res => res.json())
+    //   .then(
+    //     (result) => {
+    //       setUsers(result)
+    //     }
+    //   )
   }
 
   const UpdateUser = id => {
     window.location = '/update/'+id
   }
 
-  const UserDelete = id => {
-    var data = {
-      'id': id
-    }
-    fetch('https://www.mecallapi.com/api/users/delete', {
-      method: 'DELETE',
-      headers: {
-        Accept: 'application/form-data',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    })
-    .then(res => res.json())
-    .then(
-      (result) => {
-        alert(result['message'])
-        if (result['status'] === 'ok') {
-          UsersGet();
-        }
-      }
-    )
+  const UserDelete = async(id) => {
+    
+    const respone = await axiosClient.delete(`users/delete`, { data: { id: id } })
+    console.log(respone)
+    // fetch('https://www.mecallapi.com/api/users/delete', {
+    //   method: 'DELETE',
+    //   headers: {
+    //     Accept: 'application/form-data',
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify({id : '12'}),
+    // })
+    // .then(res => res.json())
+    // .then(
+    //   (result) => {
+    //     alert(result['message'])
+    //     if (result['status'] === 'ok') {
+    //       UsersGet();
+    //     }
+    //   }
+    // )
+  }
+  const PostData = async() => {
+
+    const respone = await axiosClient.post(`users/create`,  {
+      fname: "Cat",
+      lname: "Chat",
+      username: "cat.chat@mecallapi.com",
+      password: "1234",
+      email: "cat.chat@mecallapi.com",
+      avatar: "https://www.mecallapi.com/users/cat.png"
+  } )
+  }
+  const UpdateData = async(id) => {
+
+    const respone = await axiosClient.put(`users/update`,  {
+      id: id,
+     
+    
+  } )
   }
 
   return (
@@ -123,8 +147,9 @@ export default function UserList() {
                   <TableCell align="left">{user.username}</TableCell>
                   <TableCell align="center">
                     <ButtonGroup color="primary" aria-label="outlined primary button group">
-                      <Button onClick={() => UpdateUser(user.id)}>Edit</Button>
+                      <Button onClick={() => UpdateData(user.id)}>Edit</Button>
                       <Button onClick={() => UserDelete(user.id)}>Del</Button>
+                      <Button onClick={() => PostData(user.id)}>Post</Button>
                     </ButtonGroup>
                   </TableCell>
                 </TableRow>
